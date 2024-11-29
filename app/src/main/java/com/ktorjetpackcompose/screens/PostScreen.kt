@@ -1,5 +1,6 @@
 package com.ktorjetpackcompose.screens
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,11 +9,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -27,10 +30,6 @@ import com.ktorjetpackcompose.viewmodel.PostViewModel
 @Composable
 fun PostScreen(paddingValues: PaddingValues, viewModel: PostViewModel = viewModel()) {
 
-    val postss by viewModel.posts.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
-
-    // Collect paginated data from the ViewModel
     val posts = viewModel.getPostList().collectAsLazyPagingItems()
 
     LazyColumn(modifier = Modifier
@@ -38,7 +37,7 @@ fun PostScreen(paddingValues: PaddingValues, viewModel: PostViewModel = viewMode
         .fillMaxSize()) {
         items(posts) { post ->
             post?.let {
-                PostItem(post)  // Display the title of each post
+                PostItem(post)
             }
         }
 
@@ -74,8 +73,19 @@ fun PostScreen(paddingValues: PaddingValues, viewModel: PostViewModel = viewMode
 
 @Composable
 fun PostItem(post: Post) {
-    Column(modifier = Modifier.padding(8.dp)) {
-        Text(text = post.title, fontSize = 20.sp, modifier = Modifier.padding(bottom = 4.dp))
-        Text(text = post.body)
+
+    Card(
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.background),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 5.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 5.dp, horizontal = 10.dp)
+    ){
+        Column(modifier = Modifier.padding(8.dp)) {
+            Text(text = post.title, fontSize = 20.sp, modifier = Modifier.padding(bottom = 4.dp))
+            Text(text = post.body)
+        }
     }
 }

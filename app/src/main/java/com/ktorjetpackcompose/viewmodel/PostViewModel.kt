@@ -10,36 +10,10 @@ import com.ktorjetpackcompose.model.Post
 import com.ktorjetpackcompose.paging.PostPagingSource
 import com.ktorjetpackcompose.repository.PostRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class PostViewModel : ViewModel() {
 
     private val repository = PostRepository()
-
-    private val _posts = MutableStateFlow<List<Post>>(emptyList())
-    val posts: StateFlow<List<Post>> = _posts
-
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage
-
-    init {
-        fetchPosts()
-    }
-
-    /** For normal list **/
-    private fun fetchPosts() {
-        viewModelScope.launch {
-            try {
-                val fetchedPosts = repository.fetchPosts()
-                _posts.value = fetchedPosts
-            } catch (e: Exception) {
-                _errorMessage.value = e.message
-            }
-        }
-    }
-
 
     /** FoR PAGING LIST **/
     fun getPostList(): Flow<PagingData<Post>> = _postList
