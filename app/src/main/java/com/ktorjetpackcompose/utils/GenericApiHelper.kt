@@ -60,11 +60,22 @@ class GenericApiHelper(val client: HttpClient) {
         }.body()
     }
 
-    /** Generic DELETE request **/
-    suspend fun deleteRequest(url: String, headers: Map<String, String> = emptyMap()): HttpResponse {
-        return client.delete(url) {
-            // Add headers if provided
-            headers.forEach { (key, value) -> header(key, value) }
+    /** Generic DELETE request with Flow **/
+    suspend inline fun <reified T> deleteRequest(
+        url: String,
+        headers: Map<String, String> = emptyMap()
+    ): Flow<Resource<T>> = flow {
+        emit(Resource.Loading())
+        try {
+            val response: T = client.delete(url) {
+
+                /** Add headers **/
+                headers.forEach { (key, value) -> header(key, value) }
+
+            }.body()
+            emit(Resource.Success(response))
+        } catch (e: Exception) {
+            emit(Resource.Error(e.message ?: "Unknown error occurred"))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 }
